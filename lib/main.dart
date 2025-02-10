@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import './quiz.dart';
+import './result.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -12,63 +15,85 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  static const int correctAnswer = 10;
+  static const int incorrectAnswer = -5;
+  var _questionIndex = 0;
+  var _totalScore = 0;
+  late final int _maxScore = _questions.length * 10;
 
-  final _questions = const [
+  final _questions = [
     {
-      'questionText': 'Q1. Flutter is created by ______ ?',
+      'questionText': 'Q1. Who created Flutter?',
       'answers': [
-        {'text': 'Facebook', 'score': -2},
-        {'text': 'Adobe', 'score': -2},
-        {'text': 'Google', 'score': 10},
-        {'text': 'Microsoft', 'score': -2},
+        {'text': 'Facebook', 'score': incorrectAnswer},
+        {'text': 'Adobe', 'score': incorrectAnswer},
+        {'text': 'Google', 'score': correctAnswer},
+        {'text': 'Microsoft', 'score': incorrectAnswer},
       ],
     },
     {
       'questionText': 'Q2. What is Flutter?',
       'answers': [
-        {'text': 'Android Development Kit', 'score': -2},
-        {'text': 'IOS Development Kit', 'score': -2},
-        {'text': 'Web Development Kit', 'score': -2},
+        {'text': 'Android Development Kit', 'score': incorrectAnswer},
+        {'text': 'IOS Development Kit', 'score': incorrectAnswer},
+        {'text': 'Web Development Kit', 'score': incorrectAnswer},
         {
-          'text':
-              'SDK to build beautiful IOS, Android, Web & Desktop Native Apps',
-          'score': 10
+          'text': 'SDK to build beautiful IOS, Android, Web & Desktop Native Apps',
+          'score': correctAnswer,
         },
       ],
     },
     {
-      'questionText': ' Q3. Which programming language is used by Flutter',
+      'questionText': 'Q3. Which programming language is used by Flutter?',
       'answers': [
-        {'text': 'Ruby', 'score': -2},
-        {'text': 'Dart', 'score': 10},
-        {'text': 'C++', 'score': -2},
-        {'text': 'Kotlin', 'score': -2},
+        {'text': 'Ruby', 'score': incorrectAnswer},
+        {'text': 'Dart', 'score': correctAnswer},
+        {'text': 'C++', 'score': incorrectAnswer},
+        {'text': 'Kotlin', 'score': incorrectAnswer},
       ],
     },
     {
       'questionText': 'Q4. Who created Dart programming language?',
       'answers': [
-        {'text': 'Lars Bak and Kasper Lund', 'score': 10},
-        {'text': 'Brendan Eich', 'score': -2},
-        {'text': 'Bjarne Stroustrup', 'score': -2},
-        {'text': 'Jeremy Ashkenas', 'score': -2},
+        {'text': 'Lars Bak and Kasper Lund', 'score': correctAnswer},
+        {'text': 'Brendan Eich', 'score': incorrectAnswer},
+        {'text': 'Bjarne Stroustrup', 'score': incorrectAnswer},
+        {'text': 'Jeremy Ashkenas', 'score': incorrectAnswer},
       ],
     },
     {
-      'questionText':
-          'Q5. Is Flutter for Web and Desktop available in stable version?',
+      'questionText': 'Q5. Is Flutter for Web and Desktop available in stable version?',
       'answers': [
-        {
-          'text': 'Yes',
-          'score': 10,
-        },
-        {'text': 'No', 'score': -2},
+        {'text': 'Yes', 'score': correctAnswer},
+        {'text': 'No', 'score': incorrectAnswer},
       ],
     },
   ];
 
-  var _questionIndex = 0;
-  var _totalScore = 0;
+  void _resetQuiz() {
+    setState(() {
+    _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    print(_totalScore);
+
+    setState(() {
+     _questionIndex = _questionIndex + 1;
+    });
+    // ignore: avoid_print
+    print(_questionIndex);
+    if (_questionIndex < _questions.length) {
+      // ignore: avoid_print
+      print('We have more questions!');
+    } else {
+      // ignore: avoid_print
+      print('No more questions!');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +105,16 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(30.0),
-          child: Container(), //Padding
-        ),
-      ),
+          child: _questionIndex < _questions.length
+              ? Quiz(
+            answerQuestion: _answerQuestion,
+            questionIndex: _questionIndex,
+            questions: _questions,
+          ) //Quiz
+              : Result(_totalScore, _resetQuiz, _maxScore),
+        ), //Padding
+      ), //Scaffold
+      debugShowCheckedModeBanner: false,
     ); //MaterialApp
   }
 }
